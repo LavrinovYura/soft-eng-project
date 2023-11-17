@@ -161,6 +161,73 @@ def message_is_group(text):
                 return True
     else:
         return False
+        
+# Обработка ФИО
+@dp.message_handler(state=CokStates.waiting_for_fio)
+async def handle_fio(message: types.Message, state: FSMContext):
+    if message.text == go_back_text:
+        await state.finish()
+        await bot.send_message(message.from_user.id, text=main_menu_text, reply_markup=main_keyboard)
+    else:
+        if text_is_fio(message.text):
+            await state.update_data(fio=message.text)
+            await bot.send_message(message.from_user.id, text="Введи свой вопрос:")
+            await CokStates.waiting_for_question.set()
+        else:
+            await bot.send_message(message.from_user.id,
+                                   text="Введи корректно своё ФИО в формате <b>Иванов Иван Иванович</b>:",
+                                   parse_mode='HTML')
+
+# Обработка полученного вопроса
+@dp.message_handler(state=CokStates.waiting_for_question)
+async def handle_question_to_send(message: types.Message, state: FSMContext):
+    if message.text == go_back_text:
+        await state.finish()
+        await bot.send_message(message.from_user.id, text=main_menu_text, reply_markup=main_keyboard)
+    else:
+        await state.update_data(question=message.text)
+        await bot.send_message(message.from_user.id, text="Введи свою почту, чтобы получить на нее ответ:")
+        await CokStates.waiting_for_mail.set()
+        
+# Обработка полученного mail'a
+@dp.message_handler(state=CokStates.waiting_for_mail)
+async def handle_mail(message: types.Message, state: FSMContext):
+    if message.text == go_back_text:
+        await state.finish()
+        await bot.send_message(message.from_user.id, text=main_menu_text, reply_markup=main_keyboard)
+    else:
+        if message_is_mail(message.text):
+            await state.update_data(mail=message.text)
+            user_data = await state.get_data()
+            question = user_data['question']
+            await bot.send_message(message.from_user.id,
+                                   text=f'Ты хочешь отправить письмо в ЦКО с вопросом:\n\n<b>{question}</b>\n\n'
+                                        f'И получить ответ на почту: <b>{message.text}</b>\n\n'
+                                        f'Все верно?', parse_mode='HTML', reply_markup=go_back_and_yes_no_keyboard)
+            await CokStates.confirm_sending.set()
+        else:
+            await bot.send_message(message.from_user.id, text="Введи свою почту в верном формате!")
+
+# Подтверждение отправления письма
+@dp.message_handler(state=CokStates.confirm_sending)
+async def handle_confirmation(message: types.Message, state: FSMContext):
+    if message.text == go_back_text:
+        await state.finish()
+        await bot.send_message(message.from_user.id, text=main_menu_text, reply_markup=main_keyboard)
+    elif message.text == 'Нет':
+        await state.finish()
+        await bot.send_message(message.from_user.id, text=main_menu_text, reply_markup=main_keyboard)
+    elif message.text == 'Да':
+        user_data = await state.get_data()
+        mail = user_data['mail']
+        question = user_data['question']
+        fio = user_data['fio']
+        mailSender.send_mail(question, mail, fio)
+        await bot.send_message(message.from_user.id, text="Письмо отправлено!")
+        await bot.send_message(message.from_user.id, text=main_menu_text, reply_markup=main_keyboard)
+        await state.finish()
+    else:
+        await bot.send_message(message.from_user.id, text=sorry_no_understand_text)
 
 if __name__ == "__main__":
     executor.start_polling(dp, skip_updates=True)
