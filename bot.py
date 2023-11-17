@@ -1,13 +1,20 @@
-import logging
+import re
+import time
 
 from aiogram import Bot, Dispatcher, executor, types
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.dispatcher import FSMContext
 
-from DataBase import DataBase
-from StatesDir.StartState import *
+import mailSender
+from StatesDir.AdminStates import *
 from config import *
-
+from StatesDir.ScheduleStates import *
+from StatesDir.StartState import *
+from AskStates import *
+from StatesDir.CokStates import *
+import logging
+from DataBase import DataBase
+from Similarity import Similarity
 from ruzParser import get_schedule, get_today_schedule
 
 
@@ -36,6 +43,12 @@ yes_button = types.KeyboardButton("Да")
 no_button = types.KeyboardButton("Нет")
 go_back_and_yes_no_keyboard = types.ReplyKeyboardMarkup().add(yes_button).add(no_button).add(go_back_button)
 
+yes_go_search = "Да, искать похожие вопросы"
+no_go_search = "Нет, вернуться в главное меню"
+yes_search_button = types.KeyboardButton(yes_go_search)
+no_go_back_button = types.KeyboardButton(no_go_search)
+go_back_and_yes_search_keyboard = types.ReplyKeyboardMarkup().add(yes_search_button).add(no_go_back_button)
+
 today_schedule_button = types.KeyboardButton("Получить расписание на сегодня")
 week_schedule_button = types.KeyboardButton("Получить расписание на неделю")
 schedule_keyboard = types.ReplyKeyboardMarkup().add(today_schedule_button).add(week_schedule_button).add(go_back_button)
@@ -47,6 +60,12 @@ sorry_no_understand_text = "Не понял, выбери один из вари
 help_text = "<b>PolyNaviBot</b> - это <u>уникальный бот</u>, способный помочь связаться с ЦКО или ответить на " \
             "волнующие вопросы\nЕсли мы мы не смогли найти ответ на вопрос, не переживай! Мы собираем все " \
             "интригующие аудиторию вопросы и на наиболее частые <b>даем ответ</b>!"
+
+# Класс совпадений
+sm = Similarity()
+
+
+
 
 # Обработка старт
 @dp.message_handler(commands=['start'])
@@ -142,6 +161,73 @@ def message_is_group(text):
                 return True
     else:
         return False
+        
+# Обработка ФИО
+@dp.message_handler(state=CokStates.waiting_for_fio)
+async def handle_fio(message: types.Message, state: FSMContext):
+    if message.text == go_back_text:
+        await state.finish()
+        await bot.send_message(message.from_user.id, text=main_menu_text, reply_markup=main_keyboard)
+    else:
+        if text_is_fio(message.text):
+            await state.update_data(fio=message.text)
+            await bot.send_message(message.from_user.id, text="Введи свой вопрос:")
+            await CokStates.waiting_for_question.set()
+        else:
+            await bot.send_message(message.from_user.id,
+                                   text="Введи корректно своё ФИО в формате <b>Иванов Иван Иванович</b>:",
+                                   parse_mode='HTML')
+
+# Обработка полученного вопроса
+@dp.message_handler(state=CokStates.waiting_for_question)
+async def handle_question_to_send(message: types.Message, state: FSMContext):
+    if message.text == go_back_text:
+        await state.finish()
+        await bot.send_message(message.from_user.id, text=main_menu_text, reply_markup=main_keyboard)
+    else:
+        await state.update_data(question=message.text)
+        await bot.send_message(message.from_user.id, text="Введи свою почту, чтобы получить на нее ответ:")
+        await CokStates.waiting_for_mail.set()
+        
+# Обработка полученного mail'a
+@dp.message_handler(state=CokStates.waiting_for_mail)
+async def handle_mail(message: types.Message, state: FSMContext):
+    if message.text == go_back_text:
+        await state.finish()
+        await bot.send_message(message.from_user.id, text=main_menu_text, reply_markup=main_keyboard)
+    else:
+        if message_is_mail(message.text):
+            await state.update_data(mail=message.text)
+            user_data = await state.get_data()
+            question = user_data['question']
+            await bot.send_message(message.from_user.id,
+                                   text=f'Ты хочешь отправить письмо в ЦКО с вопросом:\n\n<b>{question}</b>\n\n'
+                                        f'И получить ответ на почту: <b>{message.text}</b>\n\n'
+                                        f'Все верно?', parse_mode='HTML', reply_markup=go_back_and_yes_no_keyboard)
+            await CokStates.confirm_sending.set()
+        else:
+            await bot.send_message(message.from_user.id, text="Введи свою почту в верном формате!")
+
+# Подтверждение отправления письма
+@dp.message_handler(state=CokStates.confirm_sending)
+async def handle_confirmation(message: types.Message, state: FSMContext):
+    if message.text == go_back_text:
+        await state.finish()
+        await bot.send_message(message.from_user.id, text=main_menu_text, reply_markup=main_keyboard)
+    elif message.text == 'Нет':
+        await state.finish()
+        await bot.send_message(message.from_user.id, text=main_menu_text, reply_markup=main_keyboard)
+    elif message.text == 'Да':
+        user_data = await state.get_data()
+        mail = user_data['mail']
+        question = user_data['question']
+        fio = user_data['fio']
+        mailSender.send_mail(question, mail, fio)
+        await bot.send_message(message.from_user.id, text="Письмо отправлено!")
+        await bot.send_message(message.from_user.id, text=main_menu_text, reply_markup=main_keyboard)
+        await state.finish()
+    else:
+        await bot.send_message(message.from_user.id, text=sorry_no_understand_text)
 
 if __name__ == "__main__":
     executor.start_polling(dp, skip_updates=True)
