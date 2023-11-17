@@ -28,6 +28,23 @@ class DataBase:
         group_id = self.cursor.execute("""SELECT group_id FROM usersInfo WHERE user_id = ?""", (user_id,)).fetchone()
         return group_id
 
+    def get_all_ids(self):
+        """Получение всех ид пользователей"""
+        return self.cursor.execute("""SELECT user_id FROM usersInfo""").fetchall()
+
+    def get_all_questions(self):
+        """Получение всех вопросов для сравнения"""
+        return self.cursor.execute("""SELECT question FROM questions""").fetchall()
+
+    def get_answer(self, question):
+        """Получение ответа на вопрос"""
+        return self.cursor.execute("""SELECT answer FROM questions WHERE question = ?""", (question,)).fetchone()[0]
+
+    def add_question_to_consider(self, question):
+        """Добвление вопроса на рассмотрение"""
+        self.cursor.execute("""INSERT INTO questionsToConsider (question) VALUES (?)""", (question,))
+        return  self.connection.commit()
+
     def close(self):
         """Закрытие соединения с БД"""
         self.connection.close()
