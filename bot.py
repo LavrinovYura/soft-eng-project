@@ -89,5 +89,65 @@ def message_is_group(text):
     else:
         return False
 
+# Обработка полученного вопроса
+@dp.message_handler(state=CokStates.waiting_for_question)
+async def handle_question_to_send(message: types.Message, state: FSMContext):
+    if message.text == go_back_text:
+        await state.finish()
+        await bot.send_message(message.from_user.id, text=main_menu_text, reply_markup=main_keyboard)
+    else:
+        await state.update_data(question=message.text)
+        await bot.send_message(message.from_user.id, text="Введи свою почту, чтобы получить на нее ответ:")
+        await CokStates.waiting_for_mail.set()
+
+# Обработка "вы получили ответ на свой вопрос?" вывод топ 3 вопросов
+@dp.message_handler(state=AskStates.did_you_get_the_right_answer)
+async def handle_yes_no(message: types.Message, state: FSMContext):
+    if message.text == go_back_text:
+        await state.finish()
+        await bot.send_message(message.from_user.id, text=main_menu_text, reply_markup=main_keyboard)
+    elif message.text == "Да" or message.text == no_go_search:
+        await bot.send_message(message.from_user.id, text="Отлично!\n" + main_menu_text, reply_markup=main_keyboard)
+        await state.finish()
+    elif message.text == "Нет" or message.text == yes_go_search:
+        user_data = await state.get_data()
+        await bot.send_message(message.from_user.id, text="Попробуем найти похожие вопросы из нашей базы...")
+        questions, answers = sm.get_top_questions(user_data['question'])
+        if answers[0] == "Null":
+            result = 'Похожих вопросов не найдено :('
+        else:
+            result = "Возможно, ты искал:"
+            for i in range(3):
+                if answers[i] != "Null":
+                    result = result + f"\n\n{questions[i]}\n{answers[i]}"
+        await bot.send_message(message.from_user.id, text=result)
+        await bot.send_message(message.from_user.id, text="Ты получил ответ на свой вопрос?",
+                               reply_markup=go_back_and_yes_no_keyboard)
+        await AskStates.did_you_get_the_right_answer_after_top.set()
+    else:
+        await bot.send_message(message.from_user.id, text=sorry_no_understand_text,
+                               reply_markup=go_back_and_yes_no_keyboard)
+
+# Обработка "Вы получили ответ на свой вопрос №2" добавление вопроса в бд
+@dp.message_handler(state=AskStates.did_you_get_the_right_answer_after_top)
+async def handle_yes_no_two(message: types.Message, state: FSMContext):
+    if message.text == go_back_text:
+        await bot.send_message(message.from_user.id, text=main_menu_text, reply_markup=main_keyboard)
+        await state.finish()
+    elif message.text == "Да":
+        await bot.send_message(message.from_user.id, text="Отлично!\n" + main_menu_text, reply_markup=main_keyboard)
+        await state.finish()
+    elif message.text == "Нет":
+        await bot.send_message(message.from_user.id, text="Нам жаль, мы добавим ваш вопрос на рассмотрение. "
+                                                          "Чтобы получить ответ на данный вопрос быстрее, "
+                                                          "воспользуйся функцией отправки письма в ЦКО в главном меню",
+                               reply_markup=main_keyboard)
+        user_data = await state.get_data()
+        db.add_question_to_consider(user_data['question'])
+        await state.finish()
+    else:
+        await bot.send_message(message.from_user.id, text=sorry_no_understand_text,
+                               reply_markup=go_back_and_yes_no_keyboard)
+
 if __name__ == "__main__":
     executor.start_polling(dp, skip_updates=True)
