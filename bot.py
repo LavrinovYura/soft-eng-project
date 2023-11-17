@@ -1,13 +1,20 @@
-import logging
+import re
+import time
 
 from aiogram import Bot, Dispatcher, executor, types
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.dispatcher import FSMContext
 
-from DataBase import DataBase
-from StatesDir.StartState import *
+import mailSender
+from StatesDir.AdminStates import *
 from config import *
-
+from StatesDir.ScheduleStates import *
+from StatesDir.StartState import *
+from AskStates import *
+from StatesDir.CokStates import *
+import logging
+from DataBase import DataBase
+from Similarity import Similarity
 from ruzParser import get_schedule, get_today_schedule
 
 
@@ -36,6 +43,12 @@ yes_button = types.KeyboardButton("Да")
 no_button = types.KeyboardButton("Нет")
 go_back_and_yes_no_keyboard = types.ReplyKeyboardMarkup().add(yes_button).add(no_button).add(go_back_button)
 
+yes_go_search = "Да, искать похожие вопросы"
+no_go_search = "Нет, вернуться в главное меню"
+yes_search_button = types.KeyboardButton(yes_go_search)
+no_go_back_button = types.KeyboardButton(no_go_search)
+go_back_and_yes_search_keyboard = types.ReplyKeyboardMarkup().add(yes_search_button).add(no_go_back_button)
+
 today_schedule_button = types.KeyboardButton("Получить расписание на сегодня")
 week_schedule_button = types.KeyboardButton("Получить расписание на неделю")
 schedule_keyboard = types.ReplyKeyboardMarkup().add(today_schedule_button).add(week_schedule_button).add(go_back_button)
@@ -47,6 +60,12 @@ sorry_no_understand_text = "Не понял, выбери один из вари
 help_text = "<b>PolyNaviBot</b> - это <u>уникальный бот</u>, способный помочь связаться с ЦКО или ответить на " \
             "волнующие вопросы\nЕсли мы мы не смогли найти ответ на вопрос, не переживай! Мы собираем все " \
             "интригующие аудиторию вопросы и на наиболее частые <b>даем ответ</b>!"
+
+# Класс совпадений
+sm = Similarity()
+
+
+
 
 # Обработка старт
 @dp.message_handler(commands=['start'])
