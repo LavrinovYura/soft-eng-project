@@ -1,7 +1,7 @@
 import unittest
 import sqlite3
 from unittest.mock import Mock
-from DataBase import DataBase  # Замените "your_module" на имя вашего модуля
+from DataBase import DataBase
 
 class TestDataBase(unittest.TestCase):
     def setUp(self):
