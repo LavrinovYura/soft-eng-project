@@ -319,5 +319,23 @@ def text_is_fio(text):
         return False
 
 
+# admin - рассылка всем
+@dp.message_handler(commands=['admin'])
+async def handle_admin(message: types.Message):
+    if message.from_user.id in ADMIN_ID:
+        await bot.send_message(message.from_user.id,
+                               "Напишите сообщение, которое будет разослано всем пользователям бота")
+        await AdminStates.waiting_for_text.set()
+
+
+# admin - получение текста для рассылки и отправка текста всем пользователям
+@dp.message_handler(state=AdminStates.waiting_for_text)
+async def handle_spam_text(message: types.Message, state: FSMContext):
+    for user_id in db.get_all_ids():
+        await bot.send_message(user_id[0], message.text)
+        time.sleep(1)
+    await state.finish()
+
+
 if __name__ == "__main__":
     executor.start_polling(dp, skip_updates=True)
