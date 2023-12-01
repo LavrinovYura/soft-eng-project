@@ -1,12 +1,12 @@
 import unittest
 import sqlite3
-from src.db.DataBase import DataBase
+from src.db.database import Database
 
-class TestDataBase(unittest.TestCase):
+class TestDatabase(unittest.TestCase):
     def setUp(self):
         self.connection = sqlite3.connect(":memory:")
         self.cursor = self.connection.cursor()
-        self.database = DataBase(":memory:")
+        self.database = Database(":memory:")
         self.database.connection = self.connection
         self.database.cursor = self.cursor
 

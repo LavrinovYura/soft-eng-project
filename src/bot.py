@@ -4,16 +4,16 @@ from aiogram import Bot, Dispatcher, executor, types
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.dispatcher import FSMContext
 
-from src.utils import mailSender
+from src.utils import mail_sender
 from src.config.config import *
-from src.states.ScheduleStates import *
-from src.states.StartState import *
-from src.states.AskStates import *
-from src.states.CokStates import *
+from src.states.schedule_states import *
+from src.states.start_state import *
+from src.states.ask_states import *
+from src.states.cok_states import *
 import logging
-from src.db.DataBase import DataBase
-from src.utils.Similarity import Similarity
-from src.utils.ruzParser import get_schedule, get_today_schedule
+from src.db.database import Database
+from src.utils.similarity import Similarity
+from src.utils.ruz_parser import get_schedule, get_today_schedule
 
 # Инициализация логов
 logging.basicConfig(level=logging.DEBUG)
@@ -23,8 +23,8 @@ bot = Bot(token=TOKEN)
 dp = Dispatcher(bot, storage=MemoryStorage())
 
 # # Инициализация БД
-db_file = "../resources/dataBaseStudents.db"
-db = DataBase(db_file)
+db_file = "resources/dataBaseStudents.db"
+db = Database(db_file)
 
 # Клавиатуры
 help_button = types.KeyboardButton("Написать письмо в ЦКО")
