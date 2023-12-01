@@ -1,32 +1,33 @@
+import logging
+import os
 import re
 import time
 
+from dotenv import load_dotenv
 from aiogram import Bot, Dispatcher, executor, types
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.dispatcher import FSMContext
 
-from src.utils import mail_sender
-from src.config.config import *
-from src.states.schedule_states import *
-from src.states.start_state import *
-from src.states.ask_states import *
-from src.states.cok_states import *
-from src.states.admin_states import *
-import logging
-from src.db.database import Database
-from src.utils.similarity import Similarity
-from src.utils.ruz_parser import get_schedule, get_today_schedule
+from db.database import Database
+from states.admin_states import *
+from states.ask_states import *
+from states.cok_states import *
+from states.schedule_states import *
+from states.start_state import *
+from utils import mail_sender
+from utils.ruz_parser import get_schedule, get_today_schedule
+from utils.similarity import Similarity
 
 # Инициализация логов
 logging.basicConfig(level=logging.DEBUG)
+load_dotenv()
 
 # Инициализация бота
-bot = Bot(token=TOKEN)
+bot = Bot(token=os.getenv('TOKEN'))
 dp = Dispatcher(bot, storage=MemoryStorage())
 
 # # Инициализация БД
-db_file = "resources/dataBaseStudents.db"
-db = Database(db_file)
+db = Database(os.getenv('PATH_DB'))
 
 # Клавиатуры
 help_button = types.KeyboardButton("Написать письмо в ЦКО")
@@ -324,7 +325,7 @@ def text_is_fio(text):
 # admin - рассылка всем
 @dp.message_handler(commands=['admin'])
 async def handle_admin(message: types.Message):
-    if message.from_user.id in ADMIN_ID:
+    if message.from_user.id in os.getenv('ADMIN_ID'):
         await bot.send_message(message.from_user.id,
                                "Напишите сообщение, которое будет разослано всем пользователям бота")
         await AdminStates.waiting_for_text.set()

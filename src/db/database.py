@@ -3,6 +3,7 @@ import sqlite3
 class Database:
 
     def __init__(self, database_file):
+        print(database_file)
         """Подключение к БД и сохранение курсора"""
         self.connection = sqlite3.connect(database_file)
         self.cursor = self.connection.cursor()

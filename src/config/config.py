@@ -1,5 +1,0 @@
-TOKEN = "5350695667:AAFg1bZDiylrvAbcUUKZAm00Eia-zcnkgOo"
-
-GMAIL_PASSWORD = ""  # ЗАПОЛНИТЬ
-
-ADMIN_ID = [183119677]
