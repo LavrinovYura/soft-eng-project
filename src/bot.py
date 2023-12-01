@@ -1,4 +1,5 @@
 import re
+import time
 
 from aiogram import Bot, Dispatcher, executor, types
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
@@ -10,6 +11,7 @@ from src.states.schedule_states import *
 from src.states.start_state import *
 from src.states.ask_states import *
 from src.states.cok_states import *
+from src.states.admin_states import *
 import logging
 from src.db.database import Database
 from src.utils.similarity import Similarity
@@ -206,7 +208,7 @@ async def handle_confirmation(message: types.Message, state: FSMContext):
         mail = user_data['mail']
         question = user_data['question']
         fio = user_data['fio']
-        mailSender.send_mail(question, mail, fio)
+        mail_sender.send_mail(question, mail, fio)
         await bot.send_message(message.from_user.id, text="Письмо отправлено!")
         await bot.send_message(message.from_user.id, text=main_menu_text, reply_markup=main_keyboard)
         await state.finish()
