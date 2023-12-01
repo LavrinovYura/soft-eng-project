@@ -28,8 +28,4 @@ jobs:
 
     - name: Run unit tests
       run: |
-        python -m unittest tests/BotTest.py
-        python -m unittest tests/DBTest.py
-        python -m unittest tests/MainButtonsTest.py
-        python -m unittest tests/ParsingTest.py
-        python -m unittest tests/TestSimilarity.py
+        python -m unittest tests/*
