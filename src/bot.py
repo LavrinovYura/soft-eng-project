@@ -25,7 +25,7 @@ bot = Bot(token=TOKEN)
 dp = Dispatcher(bot, storage=MemoryStorage())
 
 # # Инициализация БД
-db_file = "../resources/dataBaseStudents.db"
+db_file = "resources/dataBaseStudents.db"
 db = Database(db_file)
 
 # Клавиатуры

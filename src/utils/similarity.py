@@ -5,7 +5,7 @@ class Similarity:
 
     # Поиск подходящего ответа
     def find_suitable_answer(self, question):
-        db_file = "../resources/dataBaseStudents.db"
+        db_file = "resources/dataBaseStudents.db"
         db = Database(db_file)
         max_ratio = 0
         answer = "Такого вопроса нам еще не задавали. Тебе повезло, ты первый!"
