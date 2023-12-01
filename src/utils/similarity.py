@@ -1,12 +1,12 @@
-from src.db.DataBase import DataBase
+from src.db.database import Database
 from difflib import SequenceMatcher
 
 class Similarity:
 
     # Поиск подходящего ответа
     def find_suitable_answer(self, question):
-        db_file = "../resources/dataBaseStudents.db"
-        db = DataBase(db_file)
+        db_file = "resources/dataBaseStudents.db"
+        db = Database(db_file)
         max_ratio = 0
         answer = "Такого вопроса нам еще не задавали. Тебе повезло, ты первый!"
         for db_question in db.get_all_questions():
@@ -19,8 +19,8 @@ class Similarity:
 
     # Получение топа вопросов по похожести
     def get_top_questions(self, question):
-        db_file = "../../resources/dataBaseStudents.db"
-        db = DataBase(db_file)
+        db_file = "resources/dataBaseStudents.db"
+        db = Database(db_file)
         max_ratios = [0] * 3
         answers = ['Null'] * 3
         questions = [''] * 3

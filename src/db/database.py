@@ -1,6 +1,6 @@
 import sqlite3
 
-class DataBase:
+class Database:
 
     def __init__(self, database_file):
         """Подключение к БД и сохранение курсора"""
