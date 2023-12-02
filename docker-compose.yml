@@ -3,10 +3,10 @@ services:
   bot:
     build: .
     volumes:
-      - ./src:/app/src
+      - ./src/python:/app/src
+      - ./src/resources:/app/src/resources
     environment:
       TOKEN: "5350695667:AAFg1bZDiylrvAbcUUKZAm00Eia-zcnkgOo"
       GMAIL_PASSWORD: ""
       ADMIN_ID: "[183119677]"
-      PATH_DB: "/app/resources/dataBaseStudents.db"
-    command: python src/bot.py
+      PATH_DB: "src/resources/dataBaseStudents.db"

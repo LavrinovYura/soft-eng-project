@@ -1,6 +1,6 @@
 import asyncio
 import unittest
-from src.bot import dp, db, handle_start, handle_schedule, help_text, handle_messages, message_is_group
+from bot import dp, db, handle_start, handle_schedule, help_text, handle_messages, message_is_group
 from aiogram import types
 
 class TestBotFunctionality(unittest.TestCase):

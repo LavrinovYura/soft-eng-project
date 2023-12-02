@@ -1,6 +1,6 @@
 import unittest
 from unittest.mock import Mock, patch
-from src.bot import (
+from bot import (
     handle_question,
     handle_yes_no,
     handle_yes_no_two,
