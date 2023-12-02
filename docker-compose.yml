@@ -3,7 +3,7 @@ services:
   bot:
     build: .
     volumes:
-      - ./python:/app/python
+      - ./python:/app/python/python
       - ./resources:/app/resources
     environment:
       TOKEN: "5350695667:AAFg1bZDiylrvAbcUUKZAm00Eia-zcnkgOo"

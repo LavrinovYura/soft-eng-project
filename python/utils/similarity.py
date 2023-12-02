@@ -1,5 +1,5 @@
 import os
-from db.database import Database
+from python.db.database import Database
 from difflib import SequenceMatcher
 from dotenv import load_dotenv
 load_dotenv()
