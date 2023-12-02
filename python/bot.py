@@ -3,6 +3,7 @@ import os
 import re
 import time
 
+from aiogram.utils.exceptions import ChatNotFound, BotBlocked
 from dotenv import load_dotenv
 from aiogram import Bot, Dispatcher, executor, types
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
@@ -94,6 +95,25 @@ async def handle_waiting_group(message: types.Message, state: FSMContext):
                                parse_mode="HTML")
         return
 
+# admin - рассылка всем
+@dp.message_handler(commands=['admin'])
+async def handle_admin(message: types.Message):
+    if message.from_user.id in os.getenv('ADMIN_ID'):
+        await bot.send_message(message.from_user.id,
+                               "Напишите сообщение, которое будет разослано всем пользователям бота")
+        await AdminStates.waiting_for_text.set()
+
+
+# admin - получение текста для рассылки и отправка текста всем пользователям
+@dp.message_handler(state=AdminStates.waiting_for_text)
+async def handle_spam_text(message: types.Message, state: FSMContext):
+    for user_id in db.get_all_ids():
+        try:
+            await bot.send_message(user_id[0], message.text)
+            time.sleep(1)
+        except (ChatNotFound, BotBlocked):
+            continue
+    await state.finish()
 
 # Получение помощи
 @dp.message_handler(commands=['help'])
@@ -320,24 +340,6 @@ def text_is_fio(text):
         return True
     else:
         return False
-
-
-# admin - рассылка всем
-@dp.message_handler(commands=['admin'])
-async def handle_admin(message: types.Message):
-    if message.from_user.id in os.getenv('ADMIN_ID'):
-        await bot.send_message(message.from_user.id,
-                               "Напишите сообщение, которое будет разослано всем пользователям бота")
-        await AdminStates.waiting_for_text.set()
-
-
-# admin - получение текста для рассылки и отправка текста всем пользователям
-@dp.message_handler(state=AdminStates.waiting_for_text)
-async def handle_spam_text(message: types.Message, state: FSMContext):
-    for user_id in db.get_all_ids():
-        await bot.send_message(user_id[0], message.text)
-        time.sleep(1)
-    await state.finish()
 
 
 if __name__ == "__main__":
