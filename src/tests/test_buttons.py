@@ -1,6 +1,6 @@
 import unittest
 from unittest.mock import Mock, patch
-from bot import *
+from src.python.bot import *
 
 class TestBotHandlers(unittest.TestCase):
 
