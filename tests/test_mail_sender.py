@@ -1,6 +1,6 @@
 import unittest
 from unittest.mock import patch
-from utils.mail_sender import send_mail
+from python.utils.mail_sender import send_mail
 
 class TestMailSender(unittest.TestCase):
     @patch('smtplib.SMTP')

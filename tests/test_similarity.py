@@ -1,6 +1,6 @@
 import unittest
 
-from utils.similarity import Similarity
+from python.utils.similarity import Similarity
 
 
 class TestSimilarityMethods(unittest.TestCase):
