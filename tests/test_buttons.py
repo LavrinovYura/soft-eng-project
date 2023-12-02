@@ -1,11 +1,11 @@
 import unittest
 from unittest.mock import Mock, patch
-from src.bot import *
+from python.bot import *
 
 class TestBotHandlers(unittest.TestCase):
 
-    @patch('src.dp')
-    @patch('src.bot')
+    @patch('python.dp')
+    @patch('python.bot')
     async def test_handle_main_buttons(self, mock_bot, mock_dp):
         message_1 = Mock(text="Написать письмо в ЦКО")
         message_2 = Mock(text="Задать вопрос боту")
@@ -39,8 +39,8 @@ class TestBotHandlers(unittest.TestCase):
             reply_markup=mock_bot.types.ReplyKeyboardMarkup.return_value
         )
 
-    @patch('src.dp')
-    @patch('src.bot')
+    @patch('python.dp')
+    @patch('python.bot')
     async def test_handle_schedule(self, mock_bot, mock_dp):
         mock_fsm_context = Mock()
 

@@ -1,0 +1,12 @@
+version: '3'
+services:
+  bot:
+    build: .
+    volumes:
+      - ./python:/app/python/python
+      - ./resources:/app/resources
+    environment:
+      TOKEN: "5350695667:AAFg1bZDiylrvAbcUUKZAm00Eia-zcnkgOo"
+      GMAIL_PASSWORD: ""
+      ADMIN_ID: "[183119677,579063664]"
+      PATH_DB: "/app/resources/dataBaseStudents.db"

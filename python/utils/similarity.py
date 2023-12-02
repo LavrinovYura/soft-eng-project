@@ -1,11 +1,12 @@
-from src.db.database import Database
+import os
+from python.db.database import Database
 from difflib import SequenceMatcher
-
+from dotenv import load_dotenv
+load_dotenv()
 class Similarity:
-
     # Поиск подходящего ответа
     def find_suitable_answer(self, question):
-        db_file = "../resources/dataBaseStudents.db"
+        db_file = os.getenv('PATH_DB')
         db = Database(db_file)
         max_ratio = 0
         answer = "Такого вопроса нам еще не задавали. Тебе повезло, ты первый!"
