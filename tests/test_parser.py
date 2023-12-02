@@ -3,7 +3,7 @@ from unittest.mock import Mock, patch
 from aiogram import types
 from aiogram.dispatcher import FSMContext
 
-from src.python.bot import handle_schedule, go_back_text
+from bot import handle_schedule, go_back_text
 
 
 class TestHandleSchedule(unittest.TestCase):
