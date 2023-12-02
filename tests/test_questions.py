@@ -9,7 +9,7 @@ from python.bot import (
 
 class TestAskHandlers(unittest.TestCase):
 
-    @patch("src.bot.send_message")
+    @patch("python.bot.send_message")
     async def test_handle_question_go_back(self, mock_send_message):
         message = Mock()
         state = Mock()
@@ -22,7 +22,7 @@ class TestAskHandlers(unittest.TestCase):
             reply_markup=main_keyboard
         )
 
-    @patch("src.bot.send_message")
+    @patch("python.bot.send_message")
     async def test_handle_yes_no_go_back(self, mock_send_message):
         message = Mock()
         state = Mock()
@@ -35,7 +35,7 @@ class TestAskHandlers(unittest.TestCase):
             reply_markup=main_keyboard
         )
 
-    @patch("src.bot.send_message")
+    @patch("python.bot.send_message")
     async def test_handle_yes_no_two_go_back(self, mock_send_message):
         message = Mock()
         state = Mock()
@@ -48,7 +48,7 @@ class TestAskHandlers(unittest.TestCase):
         )
         state.finish.assert_called_once()
 
-    @patch("your_module.bot.send_message")
+    @patch("python.bot.send_message")
     async def test_handle_yes_no_get_answer(self, mock_send_message):
         message = Mock()
         state = Mock()
@@ -61,7 +61,7 @@ class TestAskHandlers(unittest.TestCase):
         )
         state.finish.assert_called_once()
 
-    @patch("your_module.bot.send_message")
+    @patch("python.bot.send_message")
     async def test_handle_yes_no_two_search_similar(self, mock_send_message):
         message = Mock()
         state = Mock()

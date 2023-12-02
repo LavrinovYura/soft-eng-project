@@ -22,7 +22,7 @@ class TestHandleSchedule(unittest.TestCase):
         db = Mock()
         db.get_group_id.return_value = ["group1"]
         get_today_schedule = Mock(return_value="Today's schedule")
-        with patch('bot.get_today_schedule', get_today_schedule), patch('bot.db', db):
+        with patch('python.bot.get_today_schedule', get_today_schedule), patch('python.bot.db', db):
             handle_schedule(self.message, self.state)
 
     def test_handle_schedule_get_today_schedule_exception(self):
@@ -31,7 +31,7 @@ class TestHandleSchedule(unittest.TestCase):
         db = Mock()
         db.get_group_id.return_value = ["group1"]
         get_today_schedule = Mock(side_effect=Exception("Invalid group"))
-        with patch('bot.get_today_schedule', get_today_schedule), patch('bot.db', db):
+        with patch('python.bot.get_today_schedule', get_today_schedule), patch('python.bot.db', db):
             handle_schedule(self.message, self.state)
 
     def test_handle_schedule_get_schedule_success(self):
@@ -40,7 +40,7 @@ class TestHandleSchedule(unittest.TestCase):
         db = Mock()
         db.get_group_id.return_value = ["group1"]
         get_schedule = Mock(return_value="Weekly schedule")
-        with patch('bot.get_schedule', get_schedule), patch('bot.db', db):
+        with patch('python.bot.get_schedule', get_schedule), patch('python.bot.db', db):
             handle_schedule(self.message, self.state)
 
     def test_handle_schedule_get_schedule_exception(self):
@@ -49,7 +49,7 @@ class TestHandleSchedule(unittest.TestCase):
         db = Mock()
         db.get_group_id.return_value = ["group1"]
         get_schedule = Mock(side_effect=Exception("Invalid group"))
-        with patch('bot.get_schedule', get_schedule), patch('bot.db', db):
+        with patch('python.bot.get_schedule', get_schedule), patch('python.bot.db', db):
             handle_schedule(self.message, self.state)
 
     def test_handle_schedule_other_message(self):
