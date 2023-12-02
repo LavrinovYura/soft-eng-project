@@ -8,15 +8,15 @@ from aiogram import Bot, Dispatcher, executor, types
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.dispatcher import FSMContext
 
-from db.database import Database
-from states.admin_states import *
-from states.ask_states import *
-from states.cok_states import *
-from states.schedule_states import *
-from states.start_state import *
-from utils import mail_sender
-from utils.ruz_parser import get_schedule, get_today_schedule
-from utils.similarity import Similarity
+from python.db.database import Database
+from python.states.admin_states import *
+from python.states.ask_states import *
+from python.states.cok_states import *
+from python.states.schedule_states import *
+from python.states.start_state import *
+from python.utils import mail_sender
+from python.utils.ruz_parser import get_schedule, get_today_schedule
+from python.utils.similarity import Similarity
 
 # Инициализация логов
 logging.basicConfig(level=logging.DEBUG)
