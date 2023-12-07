@@ -18,6 +18,8 @@ from python.states.start_state import *
 from python.utils import mail_sender
 from python.utils.ruz_parser import get_schedule, get_today_schedule
 from python.utils.similarity import Similarity
+from python.utils.groups_parser import is_group_in_list
+
 
 # Инициализация логов
 logging.basicConfig(level=logging.DEBUG)
@@ -84,7 +86,7 @@ async def handle_start(message: types.Message):
 # Продолжение после старт
 @dp.message_handler(state=StartState.waiting_for_group_id)
 async def handle_waiting_group(message: types.Message, state: FSMContext):
-    if message_is_group(message.text):
+    if is_group_in_list(message.text):
         db.set_group_id(message.from_user.id, message.text.replace("/", "."))
         await bot.send_message(message.from_user.id, "Номер группы установлен.\n\n" + main_menu_text,
                                reply_markup=main_keyboard)
@@ -311,17 +313,6 @@ async def handle_yes_no_two(message: types.Message, state: FSMContext):
 @dp.message_handler()
 async def handle_messages(message: types.Message):
     await bot.send_message(message.from_user.id, message.text)
-
-
-# Проверка является ли текст - группой
-def message_is_group(text):
-    splitted = text.split("/")
-    if len(splitted) == 2:
-        if len(splitted[0]) == 7 and len(splitted[1]) == 5:
-            if splitted[0].isdigit() and splitted[1].isdigit():
-                return True
-    else:
-        return False
 
 
 # Проверка является ли текст-мейлом

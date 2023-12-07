@@ -1,6 +1,7 @@
 import asyncio
 import unittest
-from python.bot import dp, db, handle_start, handle_schedule, help_text, handle_messages, message_is_group
+from python.bot import dp, db, handle_start, handle_schedule, help_text, handle_messages
+from python.utils.groups_parser import is_group_in_list
 from aiogram import types
 
 class TestBotFunctionality(unittest.TestCase):
@@ -102,26 +103,26 @@ class TestMessageIsGroup(unittest.TestCase):
 
     def test_message_is_group_valid(self):
         # Проверяем, что корректное сообщение группы возвращает True
-        text = "1234567/12345"
-        result = message_is_group(text)
+        text = "5130901/00201"
+        result = is_group_in_list(text)
         self.assertTrue(result)
 
     def test_message_is_group_invalid(self):
         # Проверяем, что некорректное сообщение группы возвращает False
         invalid_text = "1234/12345"  # Неправильная длина первой части
-        result = message_is_group(invalid_text)
+        result = is_group_in_list(invalid_text)
         self.assertFalse(result)
 
         invalid_text = "1234567/1234"  # Неправильная длина второй части
-        result = message_is_group(invalid_text)
+        result = is_group_in_list(invalid_text)
         self.assertFalse(result)
 
         invalid_text = "abc/def"  # Не числовые значения
-        result = message_is_group(invalid_text)
+        result = is_group_in_list(invalid_text)
         self.assertFalse(result)
 
         invalid_text = "1234567/12345/extra"  # Лишняя часть
-        result = message_is_group(invalid_text)
+        result = is_group_in_list(invalid_text)
         self.assertFalse(result)
 
 if __name__ == '__main__':
