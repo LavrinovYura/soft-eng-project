@@ -18,33 +18,33 @@
 
 1. Клонирование репозитория:
     
-        `git clone https://github.com/LavrinovYura/soft-eng-project.git`
+        git clone https://github.com/LavrinovYura/soft-eng-project.git
    
-        `cd soft-eng-project`
+        cd soft-eng-project
     
 
 3. Установка зависимостей:
     
-        `pip install -r requirements.txt`
+        pip install -r requirements.txt
 
 4. Измените содержимое .env используя ваши данные
 
 
 5. Запуск проекта:
     
-        `python bot.py`
+        python bot.py
     
 
 6. Запуск тестов:
     
-        `python -m unittest tests/*`
+        python -m unittest tests/*
 
 ## Docker    
 Чтобы развернуть бота в Docker-контейнере, используйте команды:
 
-    `docker-compose build`
+    docker-compose build
 
-    `docker-compose up`
+    docker-compose up
 ## Лицензия
 
 Этот проект лицензирован в соответствии с условиями лицензии MIT — подробности см. в файле [LICENSE](LICENSE).
