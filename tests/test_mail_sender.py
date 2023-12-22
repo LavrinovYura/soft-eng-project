@@ -3,17 +3,18 @@ from unittest.mock import patch
 from python.utils.mail_sender import send_mail
 
 class TestMailSender(unittest.TestCase):
-    @patch('smtplib.SMTP')
+    @patch('smtplib.SMTP_SSL')
     def test_send_mail_successful(self, mock_smtp):
         # Успешная отправка письма
         result = send_mail("Проверочка!!!", "test@example.com", "Карасий Карпов Окуневич")
 
         self.assertEqual(result, "The message was sent!")
 
-    @patch('smtplib.SMTP')
+    @patch('smtplib.SMTP_SSL')
     def test_send_mail_failure(self, mock_smtp):
         # Перехват ошибки при отправке письма
-        mock_smtp.return_value.login.side_effect = Exception("Mocked error")
+        mock_server = mock_smtp.return_value.__enter__.return_value
+        mock_server.login.side_effect = Exception("Mocked error")
         result = send_mail("Проверочка!!!", "test@example.com", "Карасий Карпов Окуневич")
 
         self.assertIn("Mocked error", result)

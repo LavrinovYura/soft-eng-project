@@ -100,7 +100,7 @@ async def handle_waiting_group(message: types.Message, state: FSMContext):
 # admin - рассылка всем
 @dp.message_handler(commands=['admin'])
 async def handle_admin(message: types.Message):
-    if message.from_user.id in os.getenv('ADMIN_ID'):
+    if str(message.from_user.id) in os.getenv('ADMIN_ID'):
         await bot.send_message(message.from_user.id,
                                "Напишите сообщение, которое будет разослано всем пользователям бота")
         await AdminStates.waiting_for_text.set()
