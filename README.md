@@ -8,8 +8,8 @@
 
 Этот репозиторий содержит исходный код и материалы для нашего проекта по программной инженерии. Проект разрабатывается в рамках обучения.
 
-### Release 1.0.0
-[Release 1.0.0](https://github.com/LavrinovYura/soft-eng-project/releases/tag/v1.0.0) - последний релиз.
+### Release 1.0.1
+[Release 1.0.1](https://github.com/LavrinovYura/soft-eng-project/releases/tag/v1.0.1) - последний релиз.
 
 ## Структура репозитория
 
